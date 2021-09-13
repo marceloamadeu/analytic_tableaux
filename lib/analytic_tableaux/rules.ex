@@ -3,14 +3,14 @@ defmodule AnalyticTableaux.Rules do
 
   @spec apply_rule(Formula.t()) :: {:atom | :branch | :linear, [Formula.t()]}
   def apply_rule(formula) do
-    {get_type(formula), get_expansion(formula)}
+    {type(formula), expansion(formula)}
   end
 
   @spec can_expand?(Formula.t()) :: boolean()
   def can_expand?(nil), do: false
 
   def can_expand?(formula) do
-    case get_type(formula) do
+    case type(formula) do
       :atom -> false
       _ -> true
     end
@@ -18,39 +18,41 @@ defmodule AnalyticTableaux.Rules do
 
   # https://github.com/brunosimsenhor/analytic_tableaux/blob/main/lib/analytic_tableuax/signed_formula.ex
   # https://github.com/luissimas/analytic_tableaux/blob/master/lib/rules.ex
-  @spec get_type(Formula.t()) :: :linear | :branch | :atom
-  def get_type(%{sign: :T, formula: {:and, _, _}}), do: :linear
-  def get_type(%{sign: :F, formula: {:and, _, _}}), do: :branch
-  def get_type(%{sign: :T, formula: {:or, _, _}}), do: :branch
-  def get_type(%{sign: :F, formula: {:or, _, _}}), do: :linear
-  def get_type(%{sign: :T, formula: {:implies, _, _}}), do: :branch
-  def get_type(%{sign: :F, formula: {:implies, _, _}}), do: :linear
-  def get_type(%{sign: :T, formula: {:not, _}}), do: :linear
-  def get_type(%{sign: :F, formula: {:not, _}}), do: :linear
-  def get_type(%{formula: _}), do: :atom
+  @spec type(Formula.t()) :: :linear | :branch | :atom
+  def type(%{sign: :T, formula: {:and, _, _}}), do: :linear
+  def type(%{sign: :F, formula: {:or, _, _}}), do: :linear
+  def type(%{sign: :F, formula: {:implies, _, _}}), do: :linear
+  def type(%{sign: :T, formula: {:not, _}}), do: :linear
+  def type(%{sign: :F, formula: {:not, _}}), do: :linear
 
-  @spec get_expansion(Formula.t()) :: [Formula.t()]
-  defp get_expansion(%{sign: :T, formula: {:and, a, b}}),
-    do: [%Formula{sign: :T, formula: a}, %Formula{sign: :T, formula: b}]
+  def type(%{sign: :F, formula: {:and, _, _}}), do: :branch
+  def type(%{sign: :T, formula: {:or, _, _}}), do: :branch
+  def type(%{sign: :T, formula: {:implies, _, _}}), do: :branch
 
-  defp get_expansion(%{sign: :F, formula: {:and, a, b}}),
-    do: [%Formula{sign: :F, formula: a}, %Formula{sign: :F, formula: b}]
+  def type(%{formula: _}), do: :atom
 
-  defp get_expansion(%{sign: :T, formula: {:or, a, b}}),
-    do: [%Formula{sign: :T, formula: a}, %Formula{sign: :T, formula: b}]
+  @spec expansion(Formula.t()) :: [Formula.t()]
+  defp expansion(%{sign: :T, formula: {:and, p, q}}),
+    do: [%Formula{sign: :T, formula: p}, %Formula{sign: :T, formula: q}]
 
-  defp get_expansion(%{sign: :F, formula: {:or, a, b}}),
-    do: [%Formula{sign: :F, formula: a}, %Formula{sign: :F, formula: b}]
+  defp expansion(%{sign: :F, formula: {:and, p, q}}),
+    do: [%Formula{sign: :F, formula: p}, %Formula{sign: :F, formula: q}]
 
-  defp get_expansion(%{sign: :T, formula: {:implies, a, b}}),
-    do: [%Formula{sign: :F, formula: a}, %Formula{sign: :T, formula: b}]
+  defp expansion(%{sign: :T, formula: {:or, p, q}}),
+    do: [%Formula{sign: :T, formula: p}, %Formula{sign: :T, formula: q}]
 
-  defp get_expansion(%{sign: :F, formula: {:implies, a, b}}),
-    do: [%Formula{sign: :T, formula: a}, %Formula{sign: :F, formula: b}]
+  defp expansion(%{sign: :F, formula: {:or, p, q}}),
+    do: [%Formula{sign: :F, formula: p}, %Formula{sign: :F, formula: q}]
 
-  defp get_expansion(%{sign: :T, formula: {:not, a}}), do: [%Formula{sign: :F, formula: a}, nil]
+  defp expansion(%{sign: :T, formula: {:implies, p, q}}),
+    do: [%Formula{sign: :F, formula: p}, %Formula{sign: :T, formula: q}]
 
-  defp get_expansion(%{sign: :F, formula: {:not, a}}), do: [%Formula{sign: :T, formula: a}, nil]
+  defp expansion(%{sign: :F, formula: {:implies, p, q}}),
+    do: [%Formula{sign: :T, formula: p}, %Formula{sign: :F, formula: q}]
 
-  defp get_expansion(_), do: []
+  defp expansion(%{sign: :T, formula: {:not, p}}), do: [%Formula{sign: :F, formula: p}, nil]
+
+  defp expansion(%{sign: :F, formula: {:not, p}}), do: [%Formula{sign: :T, formula: p}, nil]
+
+  defp expansion(_), do: []
 end

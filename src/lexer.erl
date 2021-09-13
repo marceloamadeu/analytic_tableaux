@@ -1,4 +1,4 @@
--file("/usr/lib/erlang/lib/parsetools-2.2/include/leexinc.hrl", 0).
+-file("/usr/lib/erlang/lib/parsetools-2.3/include/leexinc.hrl", 0).
 %% The source of this file is part of leex distribution, as such it
 %% has the same Copyright as the other files in the leex
 %% distribution. The Copyright is defined in the accompanying file
@@ -12,9 +12,9 @@
 -export([format_error/1]).
 
 %% User code. This is placed here to allow extra attributes.
--file("src/lexer.xrl", 44).
+-file("src/lexer.xrl", 37).
 
--file("/usr/lib/erlang/lib/parsetools-2.2/include/leexinc.hrl", 14).
+-file("/usr/lib/erlang/lib/parsetools-2.3/include/leexinc.hrl", 14).
 
 format_error({illegal,S}) -> ["illegal characters ",io_lib:write_string(S)];
 format_error({user,S}) -> S.
@@ -573,7 +573,7 @@ yyaction_3(TokenLine) ->
      { token, { ',', TokenLine } } .
 
 -compile({inline,yyaction_4/1}).
--file("src/lexer.xrl", 21).
+-file("src/lexer.xrl", 22).
 yyaction_4(TokenLine) ->
      { token, { 'and', TokenLine } } .
 
@@ -583,23 +583,23 @@ yyaction_5(TokenLine) ->
      { token, { 'or', TokenLine } } .
 
 -compile({inline,yyaction_6/1}).
--file("src/lexer.xrl", 27).
+-file("src/lexer.xrl", 26).
 yyaction_6(TokenLine) ->
      { token, { 'not', TokenLine } } .
 
 -compile({inline,yyaction_7/1}).
--file("src/lexer.xrl", 30).
+-file("src/lexer.xrl", 28).
 yyaction_7(TokenLine) ->
      { token, { implies, TokenLine } } .
 
 -compile({inline,yyaction_8/1}).
--file("src/lexer.xrl", 33).
+-file("src/lexer.xrl", 31).
 yyaction_8(TokenLine) ->
      { token, { '|-', TokenLine } } .
 
 -compile({inline,yyaction_9/0}).
--file("src/lexer.xrl", 35).
+-file("src/lexer.xrl", 33).
 yyaction_9() ->
      skip_token .
 
--file("/usr/lib/erlang/lib/parsetools-2.2/include/leexinc.hrl", 313).
+-file("/usr/lib/erlang/lib/parsetools-2.3/include/leexinc.hrl", 313).
